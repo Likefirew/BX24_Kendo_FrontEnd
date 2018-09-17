@@ -20,6 +20,464 @@
 </head>
 <body style="border-width: 0; padding: 0; margin: 0; font-family: Arial, Helvetica; font-size: 14px;">
     <div id="framepane" style="border-width: 0; overflow: hidden;">
+        <div id="top_pane" style="border-width: 0; overflow: hidden; line-height: 20px;">
+            <div style="padding: 1px; padding-top: 3px; vertical-align: top;">
+                <button id="upd_refresh"></button>
+                <input id="select_mode" style="font-size: 13px; font-weight: bold; width: 275px;" placeholder="-название инфоблока-" />
+                <button id="new_entity">Инфоблок</button>
+                <button id="save_entity" style="display: none;">Создать</button>
+                <button id="new_field">Поле</button>
+                <input id="fieldID" class="k-textbox" style="width: 160px;" placeholder="-ID поля-" />
+                <input id="fieldName" class="k-textbox" style="width: 230px;" placeholder="-Название-" />
+                <input id="fieldType" style="width: 140px;" placeholder="-Тип-" />
+                <button id="save_field">Создать</button>
+                <button id="canc_field">Отмена</button>
+            </div>
+        </div>
+        <div id="bottom_pane" style="border-width: 0; height: 100%;">
+            <div id="infoblcks" style="overflow: hidden; height: 100%;">
+                <div id="part_pane" style="border-width: 0; height: 100%;">
+                    <div id="main_grid" style="height: 99%;"></div>
+                </div>
+                <div id="scnd_part">
+                    <div id="side_grid" style="height: 99%;"></div>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="//api.bitrix24.com/api/v1/"></script>
+    <script>
+        $('#framepane').kendoSplitter({
+            orientation: 'vertical',
+            panes: [{ collapsible: false, size: '37px' }, { collapsible: false, resizable: false }]
+        });
+
+        $('#infoblcks').kendoSplitter({
+            orientation: 'horizontal',
+            panes: [{ collapsible: false }, { collapsible: true, resizable: true, collapsed: false, size: '55%' }]
+        });
+
+        $('#upd_refresh').kendoButton({ icon: 'refresh' });
+        $('#upd_refresh').click(RefreshData);
+
+        $('#new_entity').kendoButton({ icon: 'plus' });
+        $('#new_entity').click(AddEntity);
+
+        $('#save_entity').kendoButton({ icon: 'floppy' });
+        $('#save_entity').click(SaveEntity);
+
+        $('#new_field').kendoButton({ icon: 'plus' });
+        $('#new_field').click(AddField);
+
+        $('#canc_field').kendoButton();
+        $('#canc_field').click(AddField);
+
+        $('#save_field').kendoButton({ icon: 'floppy' });
+        $('#save_field').click(SaveField);
+
+        $('#fieldType').kendoComboBox({
+            dataValueField: 'value',
+            dataTextField: 'name',
+            dataSource: [{ value: 'S', name: 'Строка' }, { value: 'N', name: 'Число' }, { value: 'F', name: 'Файл' }],
+            index: 0
+        });
+
+        $('#select_mode').kendoComboBox({
+            dataValueField: 'ENTITY',
+            dataTextField: 'NAME',
+            dataSource: [{ ENTITY: '', NAME: ''}],
+            change: ActEntityData,
+            index: 0
+        });
+
+        $('#main_grid').kendoGrid({
+            dataSource: {
+                data: []
+            },
+            scrollable: true,
+            sortable: true,
+            filterable: true,
+            selectable: 'single row',
+            columns: [
+                { field: 'PROPERTY', title: 'ID поля', width: '240px' },
+                { field: 'NAME', title: 'Название', width: '450px' },
+                { field: 'TYPE', title: 'Тип', width: '120px', template: '#:(TYPE == "S") ? "Строка" : (TYPE == "N") ? "Число" : "Файл"#' }
+            ]
+        });
+        var gloVar = {
+            entSlct: { id: 'select_mode', cntrl: 'kendoComboBox'}
+        }
+
+        function updateMainSelect(newData, newIndex, newEvent) {
+            var entSlct = $('#' + gloVar.entSlct.id).data(gloVar.entSlct.cntrl);
+
+            updateKndrl(entSlct, newData);
+
+            if (newIndex != null && newIndex < newData.length) entSlct.select(newIndex);
+            if (newEvent && newEvent != '') entSlct.trigger(newEvent);
+        }
+
+        function updateKndrl(theKndrl, newData) {
+            //var theKndrl = $('#' + elemId).data(kndrlType);
+            if (!theKndrl) return;
+
+            theKndrl.dataSource.data(newData);
+            theKndrl.setDataSource(theKndrl.dataSource);
+        }
+
+        function KndElemVisibl(theElem, viewFlag) {
+            if (!viewFlag) theElem.wrapper.hide();
+            else theElem.wrapper.show();
+        }
+
+        function newBttnsVisibl(seeSave) {
+            $('#new_field').css('display', seeSave ? 'none' : 'inline');
+            $('#new_entity').css('display', seeSave ? 'none' : 'inline');
+        }
+        
+        function newEntVisibl(seeSave) {
+            newBttnsVisibl(seeSave);
+
+            $('#save_entity').css('display', seeSave ? 'inline' : 'none');
+            $('#canc_field').css('display', seeSave ? 'inline' : 'none');
+        }
+
+        function newFldVisibl(seeSave) {
+            newBttnsVisibl(seeSave);
+
+            $('#fieldID').css('display', seeSave ? 'inline' : 'none');
+            $('#fieldName').css('display', seeSave ? 'inline' : 'none');
+            $('#save_field').css('display', seeSave ? 'inline' : 'none');
+            $('#canc_field').css('display', seeSave ? 'inline' : 'none');
+            KndElemVisibl($('#fieldType').data('kendoComboBox'), seeSave);
+        }
+
+        function RefreshData() {ActEntities();}
+
+        function ActEntities(selectFrom) {
+            newEntVisibl(false);
+            newFldVisibl(false);
+            BX24.init(function() {
+                BX24.callMethod('entity.get', 
+                                {},
+                                function(rslt) {
+                                    if (rslt.error()) console.error(rslt.error());
+                                    else {
+                                        var selIndx = (rslt.data().length > 0) ? 0 : -1;
+
+                                        if (selectFrom && selectFrom != '' && rslt.data().length > 0)
+                                            for (var step = 0, sLngth = rslt.data().length; step < sLngth; step++)
+                                                if (rslt.data()[step]['ENTITY'] == selectFrom) {
+                                                    selIndx = step;
+                                                    break;
+                                                }
+
+                                        updateMainSelect(rslt.data(), selIndx, (rslt.data().length > 0) ? 'change' : '');
+                                    }
+                                });
+            });
+        }
+
+        function SlctdEntity(getName) {
+            var entSlctr = $('#select_mode').data('kendoComboBox');
+
+            return (!getName) ? entSlctr.value() : entSlctr.text();
+        }
+
+        function EntityNextNo() {
+            var entSlctr = $('#select_mode').data('kendoComboBox');
+            var outNo = 0;
+            
+            $.map(entSlctr.dataSource.view(), function (item) {                      
+                $.map(item.ENTITY.split('_'), function (subitem) {
+                    var getInt = parseInt(subitem);
+                    if (getInt != NaN && getInt > outNo) outNo = getInt;
+                });
+            });
+            return outNo + 1;
+        }
+
+        function AddEntity() {
+            var entSlctr = $('#select_mode').data('kendoComboBox');
+            entSlctr.value('');
+            entSlctr.input.focus();
+
+            newEntVisibl(true);
+        }
+
+        function SaveEntity() {
+            var currEntity = SlctdEntity(true);
+
+            if (currEntity && currEntity != '') {
+                var addEntParams = {
+                    ENTITY: 'CRMENT_' + EntityNextNo(),
+                    NAME: currEntity,
+                    ACCESS: {AU: 'R'}
+                };
+
+                BX24.init(function() {
+                    BX24.callMethod('entity.add',
+                                    addEntParams,
+                                    function(rslt) {
+                                        if (rslt.error()) console.error(rslt.error()); // rslt.error().ex.error_description == 'Entity already exists' (.error == '"ERROR_ENTITY_ALREADY_EXISTS"')
+                                        else ActEntities(addEntParams.ENTITY);
+                                    });
+                });
+            }
+        }
+
+        function ActEntityData() {
+            BX24.init(function() {
+                var modeSlctr = $('#select_mode').data('kendoComboBox'),
+                    fltrData = {};
+
+                if (modeSlctr && modeSlctr.value() && modeSlctr.value() != '') {
+                    fltrData['ENTITY'] = modeSlctr.value();
+
+                    BX24.callMethod('entity.item.property.get',
+                                    fltrData,
+                                    function(rslt) {
+                                        if (rslt.error()) console.error(rslt.error());
+                                        else updateKndrl($('#main_grid').data('kendoGrid'), rslt.data());
+                                    });
+                }
+            });
+        }
+
+        function AddField(e) {
+            var currBtnId = $(e.target).closest('.k-button').attr('id');
+
+            newFldVisibl(currBtnId == 'new_field');
+
+            if (currBtnId != 'new_field') newEntVisibl(false);
+        }
+        
+        function SaveField() {
+            var fieldName = $('#fieldName').val(),
+                fieldId = $('#fieldID').val(),
+                entID = SlctdEntity();
+
+            if (!entID || entID == '') {
+                alert('Для завершения создания поля, необходимо выбрать инфоблок или завершить создание инфоблока');
+                return;
+            }
+
+            if (!fieldId || fieldId == '' || !fieldName || fieldName == '') {
+                alert('Необходимо задать ID и Название поля, либо нажать "Отмена" для выхода из создания поля');
+                return;
+            }
+            
+            var addFldParams = {
+                ENTITY: entID,
+                PROPERTY: fieldId,
+                NAME: fieldName,
+                TYPE: $('#fieldType').data('kendoComboBox').value()
+            };
+
+            BX24.init(function() {
+                BX24.callMethod('entity.item.property.add',
+                                addFldParams,
+                                function(rslt) {
+                                    if (rslt.error()) console.error(rslt.error());
+                                    else {
+                                        //console.dir(rslt.data());
+                                        $('#fieldName').val('');
+                                        $('#fieldID').val('');
+                                        ActEntities(entID);
+                                    }
+                                });
+            });
+        }
+
+        ActEntities();
+    </script>
+    <style>
+        body:before
+        {
+            content: "\a0";
+            font-size: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-width: 320px;
+        }
+
+        .k-popup.ra-list {
+            background-color: #010101;
+            border-color: #5c5c5c;
+            color: #fff;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .k-popup.ra-list .k-state-hover,
+        .k-popup.ra-list .k-state-selected,
+        .k-popup.ra-list .k-state-focused {
+            background-image: none;
+            background-color: #555;
+            box-shadow: none;
+            color: #fff;
+            border-color: #555;
+        }
+
+        .k-popup.ra-list .k-item {
+            border-radius: 0;
+            text-indent: 7px;
+        }
+
+        #menu {
+            margin-bottom: 20px;
+        }
+
+        #profile {
+            position: relative;
+        }
+
+        .well {
+            opacity: 1.0;
+        }
+
+        .ra-well-title {
+            font-size: 1.2857em;
+            line-height: 1.2857em;
+            border-bottom: 1px solid #e7e7e7;
+            margin: -5px -19px 0.5333em;
+            padding: 0 19px 0.6222em;
+        }
+
+        .form-group .k-widget,
+        .form-group .k-textbox {
+            width: 100%;
+        }
+
+        .buttons-wrap {
+            border-top: 1px solid #e7e7e7;
+            padding-top: .5em;
+            text-align: right;
+        }
+
+        .ra-section {
+            margin-bottom: 20px;
+        }
+
+        .ra-well-overlay {
+            margin: -16px -20px -19px;
+        }
+
+        .k-splitbar {
+            border-color: rgb(243,243,244) !important;
+        }
+
+        #tabstrip .k-content {
+            min-height: 156px;
+        }
+
+        #tabstrip .k-chart {
+            height: 156px;
+        }
+
+        #tabstrip .k-content {
+            padding: 1px;
+        }
+
+        #tabstrip-4 {
+            text-align: center;
+        }
+
+        #tabstrip .km-icon:after {
+            font: 1.3em/1em "Kendo UI" !important;
+        }
+
+        .revenue:after { content: "\E08C"; }
+        .spd:after { content: "\E04B"; }
+        .spr:after { content: "\E050"; }
+        .share:after { content: "\E04E"; }
+
+        #tabstrip .k-tabstrip-items span {
+            float: left;
+            line-height: 1.3em;
+            vertical-align: middle;
+        }
+
+        #tabstrip .k-tabstrip-items .hidden-xs {
+            margin-left: 4px;
+        }
+
+        .market-donut {
+            display: inline-block;
+            width: 170px;
+        }
+
+        #panelbar .k-content {
+            padding: 1em;
+        }
+
+        #panelbar ul {
+            margin-bottom: 10px;
+        }
+
+        #listview {
+            list-style-type: none;
+            padding: 0 0 15px;
+        }
+
+        #listview figure {
+            border: 1px solid #e7e7e7;
+            border-radius: 3px;
+            padding: 5px;
+            margin-top: 15px;
+        }
+
+        figure h4 {
+            font-size: 1.15em;
+        }
+
+        figure p.hidden-sm {
+            min-height: 80px;
+        }
+
+        footer {
+            text-align: left;
+            font-size: 0.8571em;
+            padding: 2em 0;
+        }
+
+        footer p {
+            max-width: 768px;
+        }
+
+        header .container h1.visible-sm {
+            padding-top: 10px;
+            line-height: 33px;
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 767px) {
+            .k-menu.k-menu-horizontal .k-item {
+                float: none;
+            }
+
+            header .container {
+                padding: 0;
+            }
+
+            header .container h1 {
+                padding-top: 0;
+                padding-left: 15px;
+                line-height: 50px;
+            }
+
+            header .container label {
+                border-width: 0;
+                display: block;
+            }
+        }
+    </style>
 </body>
 </html>
