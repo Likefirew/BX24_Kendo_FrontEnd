@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lead by Contacts</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.common-bootstrap.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.bootstrap.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.dataviz.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.1.221/styles/kendo.dataviz.bootstrap.min.css" />
+
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2018.1.221/js/kendo.all.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2018.1.221/js/kendo.timezones.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2018.1.221/js/cultures/kendo.culture.ru-RU.min.js"></script>
+
+</head>
+<body style="border-width: 0; padding: 0; margin: 0; font-family: Arial, Helvetica; font-size: 14px;">
+    <div id="framepane" style="border-width: 0; overflow: hidden;">
+        <div id="top_pane" style="border-width: 0; overflow: hidden; line-height: 20px;">
+            <div style="padding: 1px; padding-top: 3px; vertical-align: top;">
+                <button id="upd_refresh"></button>
+                <input id="select_mode" style="font-size: 13px; font-weight: bold; width: 275px;" />
+                <button id="new_lead">+ Лид</button>
+            </div>
+        </div>
+        <div id="bottom_pane" style="border-width: 0; height: 100%;">
+            <div id="Leads" style="overflow: hidden; height: 100%;">
+                <div id="part_pane" style="border-width: 0; height: 100%;">
+                    <div id="leads_grid" style="height: 99%;"></div>
+                    <div id="fields_grid" style="height: 99%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="lead_data" class="container" style="display: none;">
+        <div style="position: fixed; height: 60px; z-index: 10; background-color: white; width: 100%; ">
+            <ul id="menu">
+                <li>Сохранить</li>
+                <li>Сохранить и закрыть</li>
+                <li>Добавить расход</li>
+                <li>Назад к списку</li>
+            </ul>
+        </div>
+        <div class="row clearfix" style="margin-top: 60px;">
+            <div class="col-lg-7 col-md-7">
+                <section class="well">
+                    <h2 class="ra-well-title">Первичная информация</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1535386197">Дата Лида</label>
+                            <div class="col-sm-4">
+                                <input id="fld_UF_CRM_1535386197" />
+                            </div>
+                            <div class="col-sm-5"></div>
+                            <div class="col-sm-3">
+                                <input id="fld_ID" type="text" class="k-textbox" style="width: 120px; " readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_TITLE">Имя (Как к Вам можно обратиться?)</label>
+                            <div class="col-sm-7">
+                                <input id="fld_TITLE" type="text" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534946219">Описание (По какому вопросу обращаетесь?)</label>
+                            <div class="col-sm-12">
+                                <textarea id="fld_UF_CRM_1534946219" class="k-textbox" style="min-height: 76px; max-height: 76px; padding-left: 4px;">Интересует объект 12345 на Сретенке, 8</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; ">
+                            <label class="col-sm-10" for="fld_UF_CRM_1533204731">ID Объекта в базе</label>
+                            <div class="col-sm-3">
+                                <input id="fld_UF_CRM_1533204731" type="text" class="k-textbox" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-5 col-md-5">
+                <section class="well">
+                    <h2 class="ra-well-title">Контактные данные</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1535473996">Пол</label>
+                            <div class="col-sm-5">
+                                <input id="fld_UF_CRM_1535473996" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_LAST_NAME">ФИО</label>
+                            <div class="col-sm-9">
+                                <input id="fld_LAST_NAME" class="k-textbox" placeholder="-фамилия-" />
+                            </div>
+                            <div class="col-sm-6" style="padding-top: 10px;">
+                                <input id="fld_NAME" class="k-textbox" placeholder="-имя-"/>
+                            </div>
+                            <div class="col-sm-6" style="padding-top: 10px;">
+                                <input id="fld_SECOND_NAME" class="k-textbox" placeholder="-отчество-"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_PHONE">Телефон</label>
+                            <div class="col-sm-7">
+                                <input id="fld_PHONE" class="k-textbox" />
+                            </div>
+                            <div class="col-sm-5">
+                                <input id="svc_PHONE_TYPE" />
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; ">
+                            <label class="col-sm-9" for="fld_EMAIL">E-Mail</label>
+                            <div class="col-sm-7">
+                                <input id="fld_EMAIL" class="k-textbox" />
+                            </div>
+                            <div class="col-sm-5">
+                                <input id="svc_EMAIL_TYPE" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-7 col-md-7">
+                <section class="well">
+                    <h2 class="ra-well-title">Текущий диагноз</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_ASSIGNED_BY_ID">Ответственный</label>
+                            <div class="col-sm-8">
+                                <input id="fld_ASSIGNED_BY_ID" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_STATUS_ID">Статус</label>
+                            <div class="col-sm-6">
+                                <input id="fld_STATUS_ID" value="Контакт (напоминать о себе)" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_STATUS_DESCRIPTION">Дополнительно о статусе</label>
+                            <div class="col-sm-12">
+                                <textarea id="fld_STATUS_DESCRIPTION" class="k-textbox" style="min-height: 76px; max-height: 76px; padding-left: 4px;">Собирался постетить офис. Договорились созвониться после выставки недвижимости в СПб</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; ">
+                            <label class="col-sm-9" for="fld_UF_CRM_1533204751">Дата возврата к Лиду (напомнить по e-mail)</label>
+                            <div class="col-sm-4">
+                                <input id="fld_UF_CRM_1533204751" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="well">
+                    <h2 class="ra-well-title">Источник. Интерес. Потребность</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_SOURCE_ID">Источник</label>
+                            <div class="col-sm-6">
+                                <input id="fld_SOURCE_ID" value="Сайт" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_SOURCE_DESCRIPTION">Дополнительно об источнике</label>
+                            <div class="col-sm-12">
+                                <input id="fld_SOURCE_DESCRIPTION" value="Контакт (напоминать о себе)" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534410656750">Вид Лида (Статус Клиента)</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534410656750" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534411084436">Предмет</label>
+                            <div class="col-sm-8">
+                                <input id="fld_UF_CRM_1534411084436" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534421889892">Тип недвижимости</label>
+                            <div class="col-sm-10">
+                                <input id="fld_UF_CRM_1534421889892" />
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; ">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534430891724">Локация</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534430891724" value="Москва" class="k-textbox" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-5 col-md-5">
+                <section class="well">
+                    <h2 class="ra-well-title">Дубликаты</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <div id="DuplGrid"></div>
+                        </div>
+                    </div>
+                </section>
+                <section class="well">
+                    <h2 class="ra-well-title">Контактные данные (Дополнительно)</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_WEB">Сайт</label>
+                            <div class="col-sm-7">
+                                <input id="fld_WEB" class="k-textbox" />
+                            </div>
+                            <div class="col-sm-5">
+                                <input id="svc_WEB_TYPE" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_BIRTHDATE">Дата рождения</label>
+                            <div class="col-sm-6">
+                                <input id="fld_BIRTHDATE" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_POST">Должность</label>
+                            <div class="col-sm-8">
+                                <input id="fld_POST" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_COMPANY_TITLE">Название компании</label>
+                            <div class="col-sm-8">
+                                <input id="fld_COMPANY_TITLE" class="k-textbox" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1535372888">Язык</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1535372888" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1535372958">Участник рассылок</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1535372958" />
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; ">
+                            <label class="col-sm-9" for="fld_UF_CRM_1533205061">Примечание к полю Участник рассылок</label>
+                            <div class="col-sm-12">
+                                <textarea id="fld_UF_CRM_1533205061" class="k-textbox" style="min-height: 76px; max-height: 76px; padding-left: 4px;">Предоставил номер телефона для СМС-уведомленийю Рассылки по e-Mail согласился получать, если в тексте есть ссылка "отписаться". Нужно выяснить - есть ли такая ссылка в нашем информационном бюллетене</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="well">
+                    <h2 class="ra-well-title">Характеристики объекта</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534421985368">Бюджет в пределах</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534421985368" placeholder="-от-" />
+                            </div>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534422020911" placeholder="-до-" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534431559">Площадь объекта</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534431559" placeholder="-не меньше-" />
+                            </div>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534431639673" placeholder="-не больше-" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1535381277">Площадь участка</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1535381277" placeholder="-от-" />
+                            </div>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1535381308" placeholder="-до-" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534431247913">Этаж</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534431247913" placeholder="-не ниже-" />
+                            </div>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534431291126" placeholder="-не выше-" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534431309461">Этажей всего</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534431309461" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-9" for="fld_UF_CRM_1534431225389">Комнат</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1534431225389" />
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; ">
+                            <label class="col-sm-9" for="fld_UF_CRM_1535381770">Готовность</label>
+                            <div class="col-sm-6">
+                                <input id="fld_UF_CRM_1535381770" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-7 col-md-7">
+                <section class="well">
+                    <h2 class="ra-well-title">Значения прочих полей</h2>
+                    <div class="form-horizontal form-widgets">
+                        <div class="form-group">
+                            <div id="AllValuesGrid"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script src="//api.bitrix24.com/api/v1/"></script>
+    <script>
+        kendo.culture('ru-RU');
+
+        var mainVar = {
+            COM_emailValueTypes: [
+                {VALUE_TYPE: 'HOME', TYPE_NAME: 'Личный', VALUE: ''},
+                {VALUE_TYPE: 'WORK', TYPE_NAME: 'Рабочий', VALUE: ''},
+                {VALUE_TYPE: 'OTHER', TYPE_NAME: 'Другой', VALUE: ''}
+            ],
+            COM_siteValueTypes: [
+                {VALUE_TYPE: 'HOME', TYPE_NAME: 'Личный', VALUE: ''},
+                {VALUE_TYPE: 'WORK', TYPE_NAME: 'Рабочий', VALUE: ''},
+                {VALUE_TYPE: 'OTHER', TYPE_NAME: 'Другой', VALUE: ''}
+            ],
+            COM_phonValueTypes: [
+                {VALUE_TYPE: 'MOBILE', TYPE_NAME: 'Мобильный', VALUE: ''},
+                {VALUE_TYPE: 'WORK', TYPE_NAME: 'Рабочий', VALUE: ''},
+                {VALUE_TYPE: 'HOME', TYPE_NAME: 'Домашний', VALUE: ''},
+                {VALUE_TYPE: 'FAX', TYPE_NAME: 'Факс', VALUE: ''},
+                {VALUE_TYPE: 'OTHER', TYPE_NAME: 'Другой', VALUE: ''}
+            ]
+        }
+
+        function checkAttrib(theObjct, theAttrib) { return (theObjct && theAttrib in theObjct) ? theObjct[theAttrib] : ''; }
+
+        function switchVisibility(seeList) {
+            $('#lead_data').css('display', seeList ? 'none' : 'block');
+            $('#framepane').css('display', seeList ? 'block' : 'none');
+        }
+
+        function menuSelect(e) {
+            if ($(e.item).children(".k-link").text() == 'Назад к списку')
+                switchVisibility(true);
+        }
+
+        function updateKndrl(elemId, kndrlType, newData) {
+            var theKndrl = $('#' + elemId).data(kndrlType);
+
+            theKndrl.dataSource.data(newData);
+            theKndrl.setDataSource(theKndrl.dataSource);
+        }
+
+        function DataSelection (compName, compType, selectItem) {
+            var compData = $('#' + compName).data(compType);
+
+            if (checkAttrib(compData, 'dataSource') == '') return [];
+
+            var selectData = $.map(compData.select(), function (item) {
+                return compData.dataSource.view()[$(item).index()][selectItem];
+            });
+
+            return selectData;
+        }
+
+        function selectValueType(e) {
+            if (!this.element || checkAttrib(this.element, 'length') == '' || checkAttrib(this.element, 'length') <= 0) return;
+            
+            var currId = checkAttrib(this.element[0], 'id');
+            var cntrlId = currId.replace('svc_', 'fld_').replace('_TYPE', '');
+            var thisData = checkAttrib($('#' + currId).data('kendoComboBox'), 'dataSource');
+
+            if (thisData == '') return;
+
+            $('#' + cntrlId).val(thisData.view()[this.select()]['VALUE']);
+        }
+
+        function checkFromTo(e) {
+        }
+
+        function renderLeadData(leadData) {
+            var allValues = [],
+                allFields = checkAttrib($('#fields_grid').data('kendoGrid'), 'dataSource');
+
+            switchVisibility(false);
+
+            for (var item in leadData) {
+                var itemFld = $('#fld_' + item);
+                var itemType = '',
+                    itemMulti = false;
+
+                if (checkAttrib(itemFld, 'length') > 0) {
+                    // TODO: определить тип поля и заполнить значение
+                    for (var step = 0, sLngth = allFields.view().length; step < sLngth; step++) {
+                        var stepFld = allFields.view()[step];
+                        if (checkAttrib(stepFld, 'Code') == item) {
+                            itemType = stepFld; //checkAttrib(stepFld, 'type');
+                            //itemMulti = checkAttrib(stepFld, 'isMultiple');
+                            break;
+                        }
+                    }
+
+                    if (itemType.type == 'enumeration')
+                        itemFld.data((itemType.isMultiple) ? 'kendoMultiSelect' : 'kendoComboBox').value(leadData[item]);
+                    else if (itemType.type == 'date' || itemType.type == 'datetime')
+                        itemFld.data('kendoDatePicker').value(leadData[item]);
+                    else if ((itemType.type == 'money' || itemType.type == 'double' || itemType.type == 'integer') && item != 'ID') {
+                        if (itemType.type == 'money') {
+                            var moneyValue = leadData[item].split('|');
+
+                            if (checkAttrib(moneyValue, 'length') > 1)
+                                itemFld.data('kendoNumericTextBox').setOptions({ format: '#,## ' + moneyValue[1] });
+                        }
+                        itemFld.data('kendoNumericTextBox').value(leadData[item]);
+                    }
+                    else if (itemType.type == 'crm_multifield') {
+                        if (item == 'PHONE' && checkAttrib(leadData[item], 'length') > 0) {
+                            for (var step = 0, sLngth = leadData[item].length; step < sLngth; step++) {
+                                for (var loop = 0, lLngth = mainVar.COM_phonValueTypes.length; loop < lLngth; loop++) {
+                                    if (leadData[item][step].VALUE_TYPE == mainVar.COM_phonValueTypes[loop].VALUE_TYPE) {
+                                        mainVar.COM_phonValueTypes[loop].VALUE = leadData[item][step].VALUE;
+                                        break;
+                                    }
+                                }
+                            }
+                            updateKndrl('svc_PHONE_TYPE', 'kendoComboBox', mainVar.COM_phonValueTypes);
+                            $('#svc_PHONE_TYPE').data('kendoComboBox').select(0);
+                            $('#svc_PHONE_TYPE').data('kendoComboBox').trigger('change');
+                        }
+                        else if (item == 'EMAIL' && checkAttrib(leadData[item], 'length') > 0) {
+                            for (var step = 0, sLngth = leadData[item].length; step < sLngth; step++) {
+                                for (var loop = 0, lLngth = mainVar.COM_emailValueTypes.length; loop < lLngth; loop++) {
+                                    if (leadData[item][step].VALUE_TYPE == mainVar.COM_emailValueTypes[loop].VALUE_TYPE) {
+                                        mainVar.COM_emailValueTypes[loop].VALUE = leadData[item][step].VALUE;
+                                        break;
+                                    }
+                                }
+                            }
+                            updateKndrl('svc_EMAIL_TYPE', 'kendoComboBox', mainVar.COM_emailValueTypes);
+                            $('#svc_EMAIL_TYPE').data('kendoComboBox').select(0);
+                            $('#svc_EMAIL_TYPE').data('kendoComboBox').trigger('change');
+                        }
+                        else if (item == 'WEB' && checkAttrib(leadData[item], 'length') > 0) {
+                            for (var step = 0, sLngth = leadData[item].length; step < sLngth; step++) {
+                                for (var loop = 0, lLngth = mainVar.COM_siteValueTypes.length; loop < lLngth; loop++) {
+                                    if (leadData[item][step].VALUE_TYPE == mainVar.COM_siteValueTypes[loop].VALUE_TYPE) {
+                                        mainVar.COM_siteValueTypes[loop].VALUE = leadData[item][step].VALUE;
+                                        break;
+                                    }
+                                }
+                            }
+                            updateKndrl('svc_WEB_TYPE', 'kendoComboBox', mainVar.COM_siteValueTypes);
+                            $('#svc_WEB_TYPE').data('kendoComboBox').select(0);
+                            $('#svc_WEB_TYPE').data('kendoComboBox').trigger('change');
+                        }
+                    }
+                    else itemFld.val(leadData[item]);
+                }
+                else if (leadData[item] && leadData[item] != '')
+                    allValues.push({Code: item, Value: leadData[item]});
+            }
+
+            updateKndrl('AllValuesGrid', 'kendoGrid', allValues);
+        }
+
+        function uploadFieldsData(fieldsData) {
+            var gridData = [];
+
+            for (var item in fieldsData) {
+                var stepItem = { Code: item };
+
+                for (var subItem in fieldsData[item])
+                    stepItem[subItem] = fieldsData[item][subItem];
+
+                gridData.push(stepItem);
+
+                var itemField = $('#fld_' + item);
+
+                if (checkAttrib(itemField, 'length') == '' || checkAttrib(itemField, 'length') < 1) continue;
+
+                if (stepItem.type == 'enumeration') {
+                    var selObject = { dataTextField: "VALUE", dataValueField: "ID", dataSource: stepItem.items };
+                    if (stepItem.isMultiple) {
+                        itemField[0].mutiple = 'multiple';
+                        itemField.kendoMultiSelect(selObject);
+                    }
+                    else
+                        itemField.kendoComboBox(selObject);
+                }
+                else if (stepItem.type == 'date' || stepItem.type == 'datetime')
+                    itemField.kendoDatePicker();
+                else if ((stepItem.type == 'money' || stepItem.type == 'double' || stepItem.type == 'integer') && item != 'ID') {
+                    var sqrTmpl = '#,## м²';
+                    var formatTmpl = (stepItem.type == 'money') ? 'c' :
+                                    (checkAttrib(stepItem, 'listLabel').indexOf('Площадь объекта') >= 0) ? sqrTmpl :
+                                    (checkAttrib(stepItem, 'listLabel').indexOf('Площадь участка') >= 0) ? '# сот' : 'n0';
+
+                    itemField[0].type = 'number';
+                    itemField[0].step = (stepItem.type == 'money') ? '1000' : '1';
+
+                    itemField.kendoNumericTextBox({
+                        decimals: (formatTmpl == sqrTmpl || stepItem.type == 'money' ? 2 : 0),
+                        format: formatTmpl,
+                        change: checkFromTo });
+                }
+            }
+            updateKndrl('fields_grid', 'kendoGrid', gridData);
+        }
+
+        function getDuplData() {
+            var leadsSelection = DataSelection('DuplGrid', 'kendoGrid', 'ID');
+
+            if (leadsSelection.length == 0) return;
+
+            BX24.init(function(){
+                BX24.callMethod(
+                    'crm.lead.get',
+                    { id: leadsSelection[0] },
+                    function (result) {
+                        if (result.error())
+                            console.log(result.error());
+                        else
+                            alert(result.data()['TITLE']);
+                    }
+                );
+            });
+        }
+
+        function leadGrdSelect(arg) {
+            var leadsSelection = DataSelection('leads_grid', 'kendoGrid', 'ID');
+
+            if (leadsSelection.length == 0) return;
+
+            BX24.init(function(){
+                BX24.callMethod(
+                    'crm.lead.get',
+                    { id: leadsSelection[0] },
+                    function (result) {
+                        if (result.error())
+                            console.log(result.error());
+                        else
+                            renderLeadData(result.data());
+                    }
+                );
+            });
+
+            BX24.init(function(){
+                BX24.callMethod(
+                    'crm.duplicate.findbycomm', 
+                    {
+                        type: "PHONE",
+                        values: [ "89098765432" ],
+                    }, 
+                    function(result) 
+                    {
+                        if(result.error())
+                            console.error(result.error());
+                        else
+                        {
+                            var duplData = [];
+
+                            for (var item in result.data()) {
+                                var countDown = checkAttrib(result.data()[item], 'length');
+
+                                if (countDown == '') continue;
+
+                                for (var step = 0; step < countDown; step++) {
+                                    duplData.push({ Type: item, ID: result.data()[item][step], Search: 'Телефон' });
+                                }
+                            }
+
+                            updateKndrl('DuplGrid', 'kendoGrid', duplData);
+                        }
+                    }
+                );
+            });
+        }
+
+        $("#menu").kendoMenu({
+            select: menuSelect
+        });
+
+        $('#framepane').kendoSplitter({
+            orientation: 'vertical',
+            panes: [{ collapsible: false, size: '37px' }, { collapsible: false, resizable: false }]
+        });
+
+        $('#part_pane').kendoSplitter({
+            orientation: 'horizontal',
+            panes: [{ collapsible: false }, { collapsible: true, resizable: true, collapsed: false, size: '25%' }]
+        });
+
+        $('#upd_refresh').kendoButton({ // TODO: click - reload grid
+            icon: 'refresh'
+        });
+        $('#upd_refresh').click(UpdGrid);
+
+        $('#svc_PHONE_TYPE').kendoComboBox({
+            dataValueField: 'VALUE_TYPE',
+            dataTextField: 'TYPE_NAME',
+            dataSource: mainVar.COM_phonValueTypes,
+            change: selectValueType
+        });
+
+        $('#svc_EMAIL_TYPE').kendoComboBox({
+            dataValueField: 'VALUE_TYPE',
+            dataTextField: 'TYPE_NAME',
+            dataSource: mainVar.COM_emailValueTypes,
+            change: selectValueType
+        });
+
+        $('#svc_WEB_TYPE').kendoComboBox({
+            dataValueField: 'VALUE_TYPE',
+            dataTextField: 'TYPE_NAME',
+            dataSource: mainVar.COM_siteValueTypes,
+            change: selectValueType
+        });
+
+        $('#select_mode').kendoComboBox({
+            dataValueField: 'value',
+            dataTextField: 'text',
+            dataSource: [{ value: 0, text: 'Лиды без контактов'}, {value: 1, text: 'Лиды с контактами'}],
+            change: UpdGrid,
+            index: 0
+        });
+
+        $('#leads_grid').kendoGrid({
+            dataSource: {
+                data: [],
+                schema: {
+                    model: {
+                        fields: {
+                            ID: { type: "number" },
+                            TITLE: { type: "string" },
+                            STATUS_ID: { type: "string" },
+                            CONTACT_ID: { type: "number" }
+                        }
+                    }
+                }
+            },
+            change: leadGrdSelect,
+            sortable: true,
+            scrollable: true,
+            selectable: 'multiple rows',
+            columns: [
+                { field: 'ID', width: '120px' },
+                { field: 'TITLE', title: 'Имя', template: '<a href="https://moscowsr.bitrix24.ru/crm/lead/details/#=ID#/" target="_blank">#=TITLE#</a>' },
+                { field: 'STATUS_ID', title: 'Статус', width: '190px' },
+                { field: 'NAME', title: 'Имя', width: '150px' },
+                { field: 'SECOND_NAME', title: 'Отчество', width: '150px' },
+                { field: 'LAST_NAME', title: 'Фамилия', width: '150px' },
+                { field: 'UF_CRM_1533204731', title: 'ID объекта', width: '100px' }
+            ],
+            dataBound: function (arg) { FixSize(); }
+        });
+
+        $('#fields_grid').kendoGrid({
+            dataSource: {
+                data: []
+            },
+            scrollable: true,
+            sortable: true,
+            filterable: true,
+            selectable: 'single row',
+            columns: [
+                'Index',
+                { field: 'Code', width: '240px' },
+                { field: 'listLabel', width: '450px' },
+                { field: 'type', width: '120px' },
+                { field: 'isRequired', width: '120px' },
+                { field: 'isReadOnly', width: '120px' },
+                { field: 'isImmutable', width: '120px' },
+                { field: 'isMultiple', width: '120px' },
+                { field: 'isDynamic', width: '120px' },
+                { field: 'statusType', width: '120px' },
+                { field: 'items', width: '500px' }
+            ]
+        });
+
+        $('#AllValuesGrid').kendoGrid({
+            dataSource: {
+                data: []
+            },
+            scrollable: true,
+            sortable: true,
+            columns: [
+                { field: 'Code', width: '240px' },
+                { field: 'Value', width: '250px' }
+            ]
+        });
+
+        $('#DuplGrid').kendoGrid({
+            dataSource: {
+                data: []
+            },
+            change: getDuplData,
+            scrollable: true,
+            sortable: true,
+            selectable: 'single row',
+            columns: [
+                { field: 'Type', title: 'Тип дубля', width: '170px' },
+                { field: 'ID', title: 'ID дублир. записи', width: '140px' },
+                { field: 'Search', title: 'Действие', width: '190px' }
+            ]
+        });
+
+        function FixSize () {
+            var currHght = (window.innerHeight == null) ? document.documentElement.innerHeight : window.innerHeight;
+
+            var shftCntrl = document.getElementById('framepane'),
+                bttmPane = document.getElementById('bottom_pane');
+
+            if (shftCntrl) shftCntrl.style.height = (currHght) ? (currHght) + 'px' : '100%';
+
+            document.body.style.height = (currHght) ? (currHght) + 'px' : '100%';
+
+            if (bttmPane) bttmPane.style.height = (currHght) ? (currHght - 37) + 'px' : '100%';
+        }
+
+        window.onresize = FixSize();
+
+        function UpdGrid () {
+            BX24.init(function(){
+                var modeSlctr = $('#select_mode').data('kendoComboBox');
+                var fltrData = {};
+
+                if (modeSlctr && modeSlctr.value() == 1) {
+                    fltrData['>CONTACT_ID'] = 0;
+                }
+                else {
+                    fltrData['CONTACT_ID'] = '';
+                }
+                BX24.callMethod('crm.lead.list',
+                    {
+                        order: { 'DATE_CREATE': 'DESC' },
+                        filter: fltrData,
+                        select: [ 'ID', 'TITLE', 'STATUS_ID', 'NAME', 'SECOND_NAME', 'LAST_NAME', 'UF_CRM_1533204731' ]
+                    },
+                    function (result) {
+                        if (result.error())
+                            console.log(result.error());
+                        else {
+                            var hrzPane = $('#part_pane').data('kendoSplitter');
+                            hrzPane.collapse(".k-pane:last");
+
+                            updateKndrl('leads_grid', 'kendoGrid', result.data());
+
+                            //while(result.more())
+                            //result.next();
+                        }
+                    });
+
+                BX24.callMethod('crm.lead.fields',
+                    {},
+                    function (result) {
+                        if (result.error())
+                            console.log(result.error());
+                        else
+                            uploadFieldsData(result.data());
+                    });
+
+                // BX24.callMethod('user.current', {}, function(res){
+                    // var name = document.getElementById('user_name');
+                    // name.innerHTML = res.data().NAME + ' ' + res.data().LAST_NAME;
+                //     console.log(res.data());
+                // });
+
+                //BX24.callMethod('entity.add', {'ENTITY': 'CRM_CLASSIFIER', 'NAME': 'Classifier', 'ACCESS': {U1:'W', AU:'R'}});
+
+                // BX24.callMethod('entity.get', {},
+                //         function(result)
+                //         {
+                            // var scrName = document.getElementById('scriptName'); // OBSOLETE - scriptName
+
+                            // if (result.error())
+                            //     scrName.innerHTML = result.error();
+                            // else {
+                            //     for (var iStp = 0, stpLen = result.data().length; iStp < stpLen; iStp++) {
+                            //         scrName.innerHTML += '' + iStp + '. ' + result.data()[iStp];
+
+                            //         for (var item in result.data()[iStp])
+                            //         scrName.innerHTML += '- - ' + item;
+                            //     }
+                            // }
+                        // });
+
+                console.log('B24 SDK is ready!', BX24.isAdmin());
+        }); }
+        UpdGrid();
+        //FixSize();
+    </script>
+    <style>
+        body:before
+        {
+            content: "\a0";
+            font-size: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-width: 320px;
+        }
+
+        .k-popup.ra-list {
+            background-color: #010101;
+            border-color: #5c5c5c;
+            color: #fff;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .k-popup.ra-list .k-state-hover,
+        .k-popup.ra-list .k-state-selected,
+        .k-popup.ra-list .k-state-focused {
+            background-image: none;
+            background-color: #555;
+            box-shadow: none;
+            color: #fff;
+            border-color: #555;
+        }
+
+        .k-popup.ra-list .k-item {
+            border-radius: 0;
+            text-indent: 7px;
+        }
+
+        #menu {
+            margin-bottom: 20px;
+        }
+
+        #profile {
+            position: relative;
+        }
+
+        .well {
+            opacity: 1.0;
+        }
+
+        .ra-well-title {
+            font-size: 1.2857em;
+            line-height: 1.2857em;
+            border-bottom: 1px solid #e7e7e7;
+            margin: -5px -19px 0.5333em;
+            padding: 0 19px 0.6222em;
+        }
+
+        .form-group .k-widget,
+        .form-group .k-textbox {
+            width: 100%;
+        }
+
+        .buttons-wrap {
+            border-top: 1px solid #e7e7e7;
+            padding-top: .5em;
+            text-align: right;
+        }
+
+        .ra-section {
+            margin-bottom: 20px;
+        }
+
+        .ra-well-overlay {
+            margin: -16px -20px -19px;
+        }
+
+        .k-splitbar {
+            border-color: rgb(243,243,244) !important;
+        }
+
+        #tabstrip .k-content {
+            min-height: 156px;
+        }
+
+        #tabstrip .k-chart {
+            height: 156px;
+        }
+
+        #tabstrip .k-content {
+            padding: 1px;
+        }
+
+        #tabstrip-4 {
+            text-align: center;
+        }
+
+        #tabstrip .km-icon:after {
+            font: 1.3em/1em "Kendo UI" !important;
+        }
+
+        .revenue:after { content: "\E08C"; }
+        .spd:after { content: "\E04B"; }
+        .spr:after { content: "\E050"; }
+        .share:after { content: "\E04E"; }
+
+        #tabstrip .k-tabstrip-items span {
+            float: left;
+            line-height: 1.3em;
+            vertical-align: middle;
+        }
+
+        #tabstrip .k-tabstrip-items .hidden-xs {
+            margin-left: 4px;
+        }
+
+        .market-donut {
+            display: inline-block;
+            width: 170px;
+        }
+
+        #panelbar .k-content {
+            padding: 1em;
+        }
+
+        #panelbar ul {
+            margin-bottom: 10px;
+        }
+
+        #listview {
+            list-style-type: none;
+            padding: 0 0 15px;
+        }
+
+        #listview figure {
+            border: 1px solid #e7e7e7;
+            border-radius: 3px;
+            padding: 5px;
+            margin-top: 15px;
+        }
+
+        figure h4 {
+            font-size: 1.15em;
+        }
+
+        figure p.hidden-sm {
+            min-height: 80px;
+        }
+
+        footer {
+            text-align: left;
+            font-size: 0.8571em;
+            padding: 2em 0;
+        }
+
+        footer p {
+            max-width: 768px;
+        }
+
+        header .container h1.visible-sm {
+            padding-top: 10px;
+            line-height: 33px;
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 767px) {
+            .k-menu.k-menu-horizontal .k-item {
+                float: none;
+            }
+
+            header .container {
+                padding: 0;
+            }
+
+            header .container h1 {
+                padding-top: 0;
+                padding-left: 15px;
+                line-height: 50px;
+            }
+
+            header .container label {
+                border-width: 0;
+                display: block;
+            }
+        }
+    </style>
+</body>
+</html>
